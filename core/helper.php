@@ -79,8 +79,12 @@ class helper
 
 		if (copy($file, $attach_file))
 		{
-			//$file_data = explode('.', $filename);
 			$thumb = 0;
+			if ($this->phpbb_extension_manager->is_enabled('sher/image_rotator') && ($this->config['rotate_img_max_width'] || $this->config['rotate_img_max_height']))
+			{
+				$this->config['img_max_height'] = $this->config['rotate_img_max_height'];
+				$this->config['img_max_width'] = $this->config['rotate_img_max_width'];
+			}
 
 			if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0) // need resize?
 			{
