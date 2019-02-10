@@ -2,21 +2,22 @@ services:
     sheer.img_to_attach.listener:
         class: sheer\img_to_attach\event\listener
         arguments:
-            - @dbal.conn
-            - @template
-            - @request
-            - @auth
-            - @sheer.img_to_attach.helper
+            - '@dbal.conn'
+            - '@template'
+            - '@request'
+            - '@auth'
+            - '@sheer.img_to_attach.helper'
         tags:
             - { name: event.listener }
     sheer.img_to_attach.helper:
         class: sheer\img_to_attach\core\helper
         arguments:
-            - @template
-            - @config
-            - @user
-            - @auth
-            - @dbal.conn
-            - %core.root_path%
-            - %core.php_ext%
-
+            - '@template'
+            - '@config'
+            - '@user'
+            - '@auth'
+            - '@dbal.conn'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '@request'
+            - '@ext.manager'
