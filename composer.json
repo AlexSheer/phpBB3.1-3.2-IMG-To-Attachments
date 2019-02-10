@@ -2,14 +2,14 @@
     "name": "sheer/img_to_attach",
     "type": "phpbb-extension",
     "description": "",
-    "homepage": "http://www.phpbbguru.net/",
-    "version": "1.0.0",
-    "time": "2015-08-09",
+    "homepage": "https://www.phpbbguru.net/community/viewtopic.php?f=64&t=49373",
+    "version": "1.0.3",
+    "time": "2019-02-10",
     "license": "GPL-2.0",
     "authors": [
         {
             "name": "Sheer",
-            "homepage": "http://www.phpbbguru.net/",
+            "homepage": "https://www.phpbbguru.net/",
             "role": "Developer"
         }
     ],
@@ -22,7 +22,13 @@
     "extra": {
         "display-name": "IMG to Attachment",
         "soft-require": {
-            "phpbb/phpbb": "3.1.*@dev"
+            "phpbb/phpbb": "3.2.*@dev"
+        },
+        "version-check": {
+            "host": "sheer.phpbbguru.net",
+            "ssl": true,
+            "directory": "/versions/img_to_attach",
+            "filename": "version.json"
         }
     }
 }
