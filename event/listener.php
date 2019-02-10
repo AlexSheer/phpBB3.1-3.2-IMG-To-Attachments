@@ -101,30 +101,30 @@ class listener implements EventSubscriberInterface
 				$attachment_data = $message_parser->attachment_data;
 
 				$text = $message_parser->message;
-				preg_match_all('#\[img\]((.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#i', $text, $current_posted_img);
-				if(!empty($current_posted_img[1]))
+				preg_match_all('#\[img\]((.*?)|(.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#i', $text, $current_posted_img);
+				if (!empty($current_posted_img[1]))
 				{
 					foreach($current_posted_img[1] as $posted_img)
 					{
-						$str = $last_x_img_ppp = preg_replace(array('#&\#46;#', '#&\#58;#', '/\[(.*?)\]/'), array('.', ':', ''), $posted_img);
-						$last_x_img_ppp		= str_replace('https', 'http', $last_x_img_ppp);
-						$last_x_img_pre		= strrchr($last_x_img_ppp,"/");
-						$last_x_img_pre		= substr($last_x_img_pre, 1);
-						$last_x_img_pre		= strtolower(preg_replace('#[^a-zA-Z0-9_+.-]#', '', $last_x_img_pre));
-						$last_x_img_pre_img	= substr($last_x_img_pre, 0, -4);
-						if($this->helper->url_exists($last_x_img_ppp))
+						$url			= preg_replace(array('#&\#46;#', '#&\#58;#', '/\[(.*?)\]/'), array('.', ':', ''), $posted_img);
+						$url			= str_replace('https', 'http', $url);
+						$filename		= strrchr($url,"/");
+						$filename		= substr($filename, 1);
+						$filename		= strtolower(preg_replace('#[^a-zA-Z0-9_+.-]#', '', $filename));
+						$filename_img	= substr($filename, 0, -4);
+						if ($this->helper->url_exists($url))
 						{
 							$post_id = (isset($post_data['post_id'])) ? $post_data['post_id'] : 0;
 							$topic_id = (isset($post_data['topic_id'])) ? $post_data['topic_id'] : 0;
 
-							$attachments[] = $this->helper->create_attach($last_x_img_ppp, $last_x_img_pre, $post_data['poster_id'], $post_id, $topic_id);
+							$attachments[] = $this->helper->create_attach($url, $filename, $post_data['poster_id'], $post_id, $topic_id);
 						}
 					}
 
-					if(!empty($attachments))
+					if (!empty($attachments))
 					{
 						$img_number = sizeof($attachments);
-						$text = preg_replace_callback('#\[img\]((.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#',
+						$text = preg_replace_callback('#\[img\]((.*?)|(.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#',
 							function ($matches) use (&$img_number)
 							{
 								return "[attachment=" . --$img_number . "]" . substr($matches[1], strrpos($matches[1], '/') + 1) . "[/attachment]";
@@ -143,13 +143,13 @@ class listener implements EventSubscriberInterface
 	public function submit_post_after($event)
 	{
 		$upload = ($this->request->variable('upload', false));
-		if($this->auth->acl_get('u_convert_img') && $upload)
+		if ($this->auth->acl_get('u_convert_img') && $upload)
 		{
 			$data = $event['data'];
 			$attachment = $data['attachment_data'];
-			if(!empty($attachment))
+			if (!empty($attachment))
 			{
-				foreach($attachment as $att)
+				foreach ($attachment as $att)
 				{
 					$attach_ids[] = $att['attach_id'];
 				}
