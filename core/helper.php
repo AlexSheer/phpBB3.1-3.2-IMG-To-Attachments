@@ -81,7 +81,7 @@ class helper
 		{
 			$thumb = 0;
 
-			// Extension "Attached Image rotator" dy sheer enabled?
+			// Extension "Attached Image rotator" by sheer enabled?
 			// https://www.phpbbguru.net/community/viewtopic.php?f=64&t=44140
 			if ($this->phpbb_extension_manager->is_enabled('sheer/image_rotator') && ($this->config['rotate_img_max_width'] || $this->config['rotate_img_max_height']))
 			{
