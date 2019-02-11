@@ -80,15 +80,18 @@ class helper
 		if (copy($file, $attach_file))
 		{
 			$thumb = 0;
+
+			// Extension "Attached Image rotator" dy sheer enabled?
+			// https://www.phpbbguru.net/community/viewtopic.php?f=64&t=44140
 			if ($this->phpbb_extension_manager->is_enabled('sher/image_rotator') && ($this->config['rotate_img_max_width'] || $this->config['rotate_img_max_height']))
 			{
 				$this->config['img_max_height'] = $this->config['rotate_img_max_height'];
 				$this->config['img_max_width'] = $this->config['rotate_img_max_width'];
 			}
 
-			if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0) // need resize?
+			if ($this->config['img_max_height'] > 0 && $this->config['img_max_width'] > 0) // Enable resize?
 			{
-				if ($size[0] > $this->config['img_max_width'] || $size[1] > $this->config['img_max_height'])
+				if ($size[0] > $this->config['img_max_width'] || $size[1] > $this->config['img_max_height']) // Need resize?
 				{
 					if ($size[0] > $size[1])
 					{
@@ -105,17 +108,8 @@ class helper
 			}
 			$filesize = filesize($attach_file);
 
-			if ($this->phpbb_extension_manager->is_enabled('tatiana5/editor_of_attachments') && $this->config['img_create_watermark'])
-			{
-				include_once($this->phpbb_root_path . 'ext/tatiana5/editor_of_attachments/core/watermark.' . $this->php_ext);
-				$class = '\tatiana5\editor_of_attachments\core\watermark';
-				if (class_exists($class))
-				{
-					$watermark = new $class($this->config, $this->request);
-					$watermark->watermark_images($this->phpbb_root_path . $this->config['upload_path'] . '/' . $physical_filename, $file_ext);
-				}
-			}
-
+			// Extension "Attached PNG Image Convert" by vlad enabled?
+			// https://www.phpbbguru.net/community/viewtopic.php?f=59&t=47951#p533248
 			if ($this->phpbb_extension_manager->is_enabled('vlad/image_convert') && $file_ext === 'png')
 			{
 				include_once($this->phpbb_root_path . 'ext/vlad/image_convert/core/pngconvert.' . $this->php_ext);
@@ -132,6 +126,19 @@ class helper
 					$filename = $filedata['real_filename'];
 					$size['mime'] = $filedata['mimetype'];
 					$file_ext = $filedata['extension'];
+				}
+			}
+
+			// Extension "Editor of attachments (resize, watermark, etc.)" by tatiana5 enabled?
+			// https://www.phpbbguru.net/community/viewtopic.php?t=42380
+			if ($this->phpbb_extension_manager->is_enabled('tatiana5/editor_of_attachments') && $this->config['img_create_watermark'])
+			{
+				include_once($this->phpbb_root_path . 'ext/tatiana5/editor_of_attachments/core/watermark.' . $this->php_ext);
+				$class = '\tatiana5\editor_of_attachments\core\watermark';
+				if (class_exists($class))
+				{
+					$watermark = new $class($this->config, $this->request);
+					$watermark->watermark_images($this->phpbb_root_path . $this->config['upload_path'] . '/' . $physical_filename, $file_ext);
 				}
 			}
 
