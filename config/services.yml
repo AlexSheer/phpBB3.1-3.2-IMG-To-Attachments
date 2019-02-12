@@ -7,15 +7,13 @@ services:
             - '@request'
             - '@auth'
             - '@sheer.img_to_attach.helper'
+            - '@ext.manager'
         tags:
             - { name: event.listener }
     sheer.img_to_attach.helper:
         class: sheer\img_to_attach\core\helper
         arguments:
-            - '@template'
             - '@config'
-            - '@user'
-            - '@auth'
             - '@dbal.conn'
             - '%core.root_path%'
             - '%core.php_ext%'
