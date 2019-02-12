@@ -11,14 +11,11 @@ namespace sheer\img_to_attach\core;
 
 class helper
 {
-	/** @var \phpbb	emplate	emplate */
-	protected $template;
-
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\user */
-	protected $user;
+	/** @var \phpbb\db\driver\driver_interface */
+	protected $db;
 
 	//** @var string phpbb_root_path */
 	protected $phpbb_root_path;
@@ -26,17 +23,14 @@ class helper
 	/** @var string phpEx */
 	protected $php_ext;
 
-	/** @var \phpbb\db\driver\driver_interface */
-	protected $db;
+	/** @var \phpbb\request\request */
+	protected $request;
 
-	/** @var \phpbb\auth\auth */
-	protected $auth;
+	/** @var \phpbb\extension\manager */
+	protected $phpbb_extension_manager;
 
 	public function __construct (
-		\phpbb\template\template $template,
 		\phpbb\config\config $config,
-		\phpbb\user $user,
-		\phpbb\auth\auth $auth,
 		\phpbb\db\driver\driver_interface $db,
 		$phpbb_root_path,
 		$php_ext,
@@ -44,10 +38,7 @@ class helper
 		\phpbb\extension\manager $phpbb_extension_manager
 	)
 	{
-		$this->template = $template;
 		$this->config = $config;
-		$this->user = $user;
-		$this->auth = $auth;
 		$this->db = $db;
 		$this->phpbb_root_path = $phpbb_root_path;
 		$this->php_ext = $php_ext;
@@ -214,7 +205,7 @@ class helper
 
 		switch ($ext)
 		{
-			case 'image/jpg':
+			case 'image/jpeg':
 				$read_function = 'imagecreatefromjpeg';
 				break;
 			case 'image/png':
