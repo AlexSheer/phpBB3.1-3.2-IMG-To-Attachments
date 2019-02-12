@@ -237,7 +237,7 @@ class helper
 		//Different Call Based On Image Type...
 		switch ($ext)
 		{
-			case 'image/jpg':
+			case 'image/jpeg':
 				@imagejpeg($dest, $destination_file_name, 85);
 				break;
 			case 'image/png':
