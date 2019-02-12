@@ -45,6 +45,9 @@ class listener implements EventSubscriberInterface
 	/** @var \phpbb\auth\auth */
 	protected $auth;
 
+	/** @var \phpbb\extension\manager */
+	protected $phpbb_extension_manager;
+
 	/**
 	* Constructor
 	*/
@@ -53,7 +56,8 @@ class listener implements EventSubscriberInterface
 		\phpbb\template\template $template,
 		\phpbb\request\request_interface $request,
 		\phpbb\auth\auth $auth,
-		$helper
+		$helper,
+		\phpbb\extension\manager $phpbb_extension_manager
 		)
 	{
 		$this->db = $db;
@@ -61,6 +65,7 @@ class listener implements EventSubscriberInterface
 		$this->request = $request;
 		$this->auth = $auth;
 		$this->helper = $helper;
+		$this->phpbb_extension_manager = $phpbb_extension_manager;
 	}
 
 	public function load_language_on_setup($event)
@@ -75,7 +80,7 @@ class listener implements EventSubscriberInterface
 
 	public function posting_parameters($event)
 	{
-		if($this->auth->acl_get('u_convert_img'))
+		if ($this->auth->acl_get('u_convert_img'))		if($this->auth->acl_get('u_convert_img'))
 		{
 			$preview = $event['preview'];
 			$upload = ($this->request->variable('upload', false));
@@ -90,14 +95,14 @@ class listener implements EventSubscriberInterface
 
 	public function modify_message($event)
 	{
-		if($this->auth->acl_get('u_convert_img'))
+		if ($this->auth->acl_get('u_convert_img'))
 		{
 			$upload = ($this->request->variable('upload', false));
 			$post_data = $event['post_data'];
 			if ($upload)
 			{
 				$message_parser = $event['message_parser'];
-				$attachments= array();
+				$attachments = array();
 				$attachment_data = $message_parser->attachment_data;
 
 				$text = $message_parser->message;
@@ -124,10 +129,29 @@ class listener implements EventSubscriberInterface
 					if (!empty($attachments))
 					{
 						$img_number = sizeof($attachments);
+
+						$text = preg_replace_callback ('#\[attachment=(.*?)\]#',
+							function ($matches) use (&$img_number)
+							{
+								return "[attachment=" . ($matches[1] + $img_number) . "]";
+							},
+							$text
+						);
+
 						$text = preg_replace_callback('#\[img\]((.*?)|(.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#',
 							function ($matches) use (&$img_number)
 							{
-								return "[attachment=" . --$img_number . "]" . substr($matches[1], strrpos($matches[1], '/') + 1) . "[/attachment]";
+								$str = substr($matches[1], strrpos($matches[1], '/') + 1);
+								$path_parts = pathinfo($matches[1]);
+								$file_ext = $path_parts['extension'];
+
+								// Extension "Attached PNG Image Convert" by vlad enabled?
+								// https://www.phpbbguru.net/community/viewtopic.php?f=59&t=47951#p533248
+								if ($this->phpbb_extension_manager->is_enabled('vlad/image_convert') && $file_ext === 'png')
+								{
+									$str = substr_replace($str, 'jpg', strrpos($str, '.') + 1);
+								}
+								return "[attachment=" . --$img_number . "]" . $str . "[/attachment]";
 							},
 							$text
 						);
