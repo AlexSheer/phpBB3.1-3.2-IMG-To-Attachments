@@ -80,7 +80,7 @@ class listener implements EventSubscriberInterface
 
 	public function posting_parameters($event)
 	{
-		if ($this->auth->acl_get('u_convert_img'))		if($this->auth->acl_get('u_convert_img'))
+		if ($this->auth->acl_get('u_convert_img'))
 		{
 			$preview = $event['preview'];
 			$upload = ($this->request->variable('upload', false));
