@@ -103,12 +103,22 @@ class listener implements EventSubscriberInterface
 			{
 				$message_parser = $event['message_parser'];
 				$attachments = array();
-				$attachment_data = $message_parser->attachment_data;
+				$attachments = $message_parser->attachment_data;
 
 				$text = $message_parser->message;
 				preg_match_all('#\[img\]((.*?)|(.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#i', $text, $current_posted_img);
 				if (!empty($current_posted_img[1]))
 				{
+					$img_number = sizeof($current_posted_img[1]);
+
+					$text = preg_replace_callback ('#\[attachment=(.*?)\]#',
+						function ($matches) use (&$img_number)
+						{
+							return "[attachment=" . ($matches[1] + $img_number) . "]";
+						},
+						$text
+					);
+
 					foreach($current_posted_img[1] as $posted_img)
 					{
 						$url			= preg_replace(array('#&\#46;#', '#&\#58;#', '/\[(.*?)\]/'), array('.', ':', ''), $posted_img);
@@ -128,16 +138,6 @@ class listener implements EventSubscriberInterface
 
 					if (!empty($attachments))
 					{
-						$img_number = sizeof($attachments);
-
-						$text = preg_replace_callback ('#\[attachment=(.*?)\]#',
-							function ($matches) use (&$img_number)
-							{
-								return "[attachment=" . ($matches[1] + $img_number) . "]";
-							},
-							$text
-						);
-
 						$text = preg_replace_callback('#\[img\]((.*?)|(.*?).jpg|(.*?).jpeg|(.*?).png|(.*?).gif)\[\/img\]#',
 							function ($matches) use (&$img_number)
 							{
